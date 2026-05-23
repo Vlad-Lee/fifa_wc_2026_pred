@@ -1,0 +1,15 @@
+# Core data
+pandas
+numpy
+
+# DuckDB (data ingestion)
+duckdb
+
+# Modelling (Dixon-Coles)
+scipy
+scikit-learn
+statsmodels
+
+# Visualisation
+matplotlib
+seaborn
