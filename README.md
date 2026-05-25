@@ -1,10 +1,18 @@
 # FIFA World Cup 2026 — Dixon-Coles Forecast
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge.svg)](https://fifawc2026pred.streamlit.app/)
+
+![Dashboard Preview](assets/dashboard_preview.png)
+
 A statistical forecast of the 2026 FIFA World Cup. A **Dixon-Coles** goal model
 is fitted to decades of international match results, and the 48-team tournament
 is then simulated thousands of times to produce advancement and title
-probabilities. Results are explored through an interactive Streamlit app and a
-Jupyter notebook.
+probabilities. Results are explored through an interactive Streamlit app.
+
+## Live Application
+
+The interactive dashboard is deployed and available online:
+👉 **[Launch the FIFA World Cup 2026 Forecast App](https://fifawc2026pred.streamlit.app/)**
 
 ## What it does
 
@@ -16,7 +24,6 @@ Jupyter notebook.
   round-robins, then the knockout bracket with extra time and penalty
   shootouts) many thousands of times and averages the outcomes.
 - **Streamlit app** — a multi-page explorer for the forecast.
-- **Notebook** — the same pipeline, end to end, with explanation between cells.
 
 ## Repository structure
 
@@ -99,22 +106,12 @@ run `src/dixon_coles.py` first. Pages:
 - **Head-to-Head** — any two teams: scoreline heatmap and win/draw/loss.
 - **Bracket Explorer** — a team's road through the knockouts.
 - **Group Stage** — each group's finishing-position distribution.
-- **Team Ratings** — the fitted attack/defence parameters.
+- **Team Ratings** — the fitted attack/defense parameters.
 - **Methodology** — how the model and simulation work.
 - **Most-Likely Bracket** — the single most probable bracket.
 
 Simulation results are cached (in memory and on disk via Streamlit), so
 re-running the same settings is instant.
-
-## The notebook
-
-```
-jupyter notebook notebooks/wc2026_dixon_coles.ipynb
-```
-
-It imports the `src/` modules and walks the whole pipeline — load data, fit the
-model, inspect it, predict a match, simulate the tournament — with charts and
-editable parameter cells.
 
 ## Model assumptions
 
@@ -132,6 +129,4 @@ editable parameter cells.
 
 For an online deployment (e.g. Streamlit Community Cloud), `requirements.txt`
 must be at the repository root and `dixon_coles_params.json` must be committed
-so the hosted app has a model to load. A deployed app cannot run the fitting
-scripts, and its filesystem is ephemeral, so the simulation re-runs on demand
-and is shared across users via the cache.
+so the hosted app has a model to load.
