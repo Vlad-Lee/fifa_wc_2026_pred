@@ -2,7 +2,7 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge.svg)](https://fifawc2026pred.streamlit.app/)
 
-![Dashboard Preview](outputs/figures/dashboard_preview.png)
+![Dashboard Preview](output/figures/dashboard_preview.png)
 
 A statistical forecast of the 2026 FIFA World Cup. A **Dixon-Coles** goal model
 is fitted to decades of international match results, and the 48-team tournament
