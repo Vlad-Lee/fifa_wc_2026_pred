@@ -166,7 +166,7 @@ def build_design(df, prediction_date, xi):
 def dixon_coles_tau(home_goals, away_goals, lam, mu, rho):
     """
     The tau adjustment. A plain "two independent Poissons" model gets the
-    frequency of low scores slightly wrong — in particular it understates
+    frequency of low scores slightly wrong - in particular it understates
     draws. Dixon & Coles multiply the joint probability of the four lowest
     scorelines by a correction factor controlled by a single parameter rho:
 
@@ -217,7 +217,7 @@ def negative_log_likelihood(params, design, ridge):
     The contribution of one match to the log-likelihood is:
         log(tau) + [home_goals*log(lambda) - lambda]
                  + [away_goals*log(mu)     - mu]
-    (the Poisson factorial term is a constant and is dropped — it does not
+    (the Poisson factorial term is a constant and is dropped - it does not
     affect where the maximum is).
 
     Each match is multiplied by its time-decay weight, so recent matches
@@ -260,7 +260,7 @@ def negative_log_likelihood(params, design, ridge):
 
     # Ridge penalty: a gentle pull of attack/defence toward 0 (the average
     # team). Stabilises teams with little recent data. Not part of classic
-    # Dixon-Coles — set RIDGE = 0 to switch it off.
+    # Dixon-Coles - set RIDGE = 0 to switch it off.
     penalty = ridge * (np.sum(attack ** 2) + np.sum(defence ** 2))
 
     return -weighted + penalty
@@ -349,7 +349,7 @@ class DixonColesModel:
         Return (lambda, mu): the expected goals for the home and away team.
 
         `home_factor` (0.0-1.0) is the fraction of the fitted home-advantage
-        term to apply to the home side — 0.0 for a neutral venue, 1.0 for a
+        term to apply to the home side - 0.0 for a neutral venue, 1.0 for a
         full home game, 0.5 for a partial edge such as a World Cup host. If it
         is left as None it falls back to the `neutral` flag: neutral=True
         gives 0.0, neutral=False gives 1.0.
@@ -378,7 +378,7 @@ class DixonColesModel:
         simulation to model a 30-minute period of extra time, where goals
         accrue for only one third of a 90-minute match (rate_scale = 1/3).
 
-        `home_factor` is passed straight through to expected_goals() — see
+        `home_factor` is passed straight through to expected_goals() - see
         there for how partial home advantage works.
         """
         lam, mu = self.expected_goals(home, away, neutral, home_factor)
@@ -455,7 +455,7 @@ def tune_decay(zip_path, xi_grid=(0.0, 0.0008, 0.0014, 0.0018, 0.0026, 0.004)):
     the training split and then measure the average log-likelihood it assigns
     to the held-out test matches. The XI with the best test-set score wins.
 
-    This does one full fit per grid point, so it is the slow path — run it
+    This does one full fit per grid point, so it is the slow path - run it
     once, note the best XI, then hard-code it in the CONFIGURATION block.
     """
     # Train on the pre-2022 split; evaluate forecasts on the 2022+ test split.
@@ -479,7 +479,7 @@ def tune_decay(zip_path, xi_grid=(0.0, 0.0008, 0.0014, 0.0018, 0.0026, 0.004)):
                 m = model.score_matrix(row["home_team"], row["away_team"],
                                        neutral=bool(row["neutral"]))
             except KeyError:
-                continue  # team unseen in training — skip
+                continue  # team unseen in training - skip
             x, y = int(row["home_score"]), int(row["away_score"])
             if x <= MAX_GOALS and y <= MAX_GOALS:
                 total += np.log(max(m[x, y], 1e-12))

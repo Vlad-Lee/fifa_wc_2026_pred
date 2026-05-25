@@ -1,15 +1,20 @@
-# Core data
-pandas
+# Python dependencies for the FIFA World Cup 2026 Dixon-Coles project.
+# Install with:  pip install -r requirements.txt
+#
+# Versions are left unpinned for convenience. Before deploying, pin them by
+# running `pip freeze > requirements.txt` inside the virtual environment so
+# the deployed app matches what you tested.
+
+# --- model & simulation (src/) -------------------------------------------
 numpy
-
-# DuckDB (data ingestion)
-duckdb
-
-# Modelling (Dixon-Coles)
+pandas
 scipy
-scikit-learn
-statsmodels
 
-# Visualisation
+# --- Streamlit app (app/) ------------------------------------------------
+streamlit
+altair
+
+# --- notebook only (notebooks/) ------------------------------------------
+# Not needed to run the app or the pipeline; only for the Jupyter notebook.
 matplotlib
-seaborn
+jupyter

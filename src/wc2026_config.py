@@ -6,7 +6,7 @@ Static description of the 2026 FIFA World Cup: the 48-team field, the group
 draw (held 5 December 2025), and the full single-elimination bracket from the
 round of 32 to the final.
 
-This file contains NO modelling logic — it is pure tournament structure that
+This file contains NO modelling logic - it is pure tournament structure that
 ``simulate_wc2026.py`` consumes. Keeping it separate means that if FIFA changes
 a name or a play-off slot, you edit this one file and nothing else.
 
@@ -18,7 +18,7 @@ regulations (Annex C).
 # 1. THE GROUP DRAW
 # ---------------------------------------------------------------------------
 # 12 groups (A-L) of 4 teams. Order inside a group is irrelevant for the
-# simulation — every group is a round-robin where all 4 teams play each other.
+# simulation - every group is a round-robin where all 4 teams play each other.
 #
 # IMPORTANT: team names must match the spelling used in results.csv (the raw
 # match dataset). If a name differs, add it to NAME_ALIASES below. The model
@@ -46,7 +46,7 @@ HOSTS = {"Mexico", "Canada", "United States"}
 # Optional rename map: {name_in_this_file: name_in_results.csv}.
 # Leave empty unless the validation step reports a missing team.
 NAME_ALIASES = {
-    # Example — uncomment / edit if your dataset spells these differently:
+    # Example - uncomment / edit if your dataset spells these differently:
     # "Turkey": "Türkiye",
     # "Czech Republic": "Czechia",
 }
@@ -128,7 +128,7 @@ FINAL = (104, "W101", "W102")
 # qualifying third-placed team, we find an assignment of groups to slots that
 # respects every eligibility set. Such a matching is always possible, and any
 # valid matching is a rules-legal bracket. It can differ from FIFA's specific
-# tabulated choice only when more than one legal matching exists — a situation
+# tabulated choice only when more than one legal matching exists - a situation
 # whose effect on aggregate title probabilities is negligible.
 
 # The eight round-of-32 matches that contain a third-place slot, paired with

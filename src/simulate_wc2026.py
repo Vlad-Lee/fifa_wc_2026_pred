@@ -10,18 +10,18 @@ HOW THE SIMULATION WORKS
 ------------------------
 One "simulation" plays the entire tournament once:
 
-  1. Group stage — every group is a round-robin (6 matches). Each match is
+  1. Group stage - every group is a round-robin (6 matches). Each match is
      played by drawing a scoreline from the Dixon-Coles distribution for that
      pairing. Host nations get a fraction (HOST_ADVANTAGE_FRACTION) of the
      model's home-advantage term in their group games; everything else is
      treated as a neutral venue.
-  2. Group tables are ranked (points, then goal difference, then goals scored,
-     then a random draw standing in for FIFA's remaining tie-breakers).
+  2. Group tables are ranked (points, then goal difference, then goals
+     scored, then a random draw standing in for FIFA's remaining tie-breakers).
   3. The eight best third-placed teams are identified and slotted into the
      bracket using the official eligibility rules (see wc2026_config.py).
   4. The knockout bracket is played match by match. A knockout match that is
      level after 90 minutes goes to extra time, and if still level, to a
-     penalty shootout — both simulated explicitly (see simulate_knockout).
+     penalty shootout - both simulated explicitly (see simulate_knockout).
   5. We record how far every team got.
 
 Repeating this many thousands of times and averaging turns those individual
@@ -50,7 +50,7 @@ RANDOM_SEED = 2026
 
 # Penalty-shootout conversion probability per kick. Historical men's World Cup
 # shootout kicks convert at roughly 70-75%. We use a single team-neutral value
-# — the model does not carry team-specific penalty skill.
+# - the model does not carry team-specific penalty skill.
 PENALTY_CONVERSION = 0.75
 
 # Host advantage. The three host nations receive HOST_ADVANTAGE_FRACTION of
@@ -60,7 +60,7 @@ PENALTY_CONVERSION = 0.75
 #   1.0 = the full home-advantage term
 # Half is a deliberate compromise: a host genuinely benefits, but a 48-team
 # tournament spread across a whole continent is a weaker home effect than a
-# single-country World Cup. Knockout games are always neutral — knockout
+# single-country World Cup. Knockout games are always neutral - knockout
 # venues are fixed in advance, so a host playing there is just bracket luck.
 # The fitted model still estimates home_advantage from historical home/away
 # matches; this fraction controls only how much of it the simulation applies.
@@ -76,7 +76,7 @@ def resolve_team_names(model):
     """
     Every team in the 2026 draw must exist in the fitted model (i.e. in
     results.csv). Returns {draw_name: model_name}. Raises a clear error if a
-    team cannot be matched — fix it by adding an entry to cfg.NAME_ALIASES.
+    team cannot be matched - fix it by adding an entry to cfg.NAME_ALIASES.
     """
     mapping, missing = {}, []
     for team in (t for grp in cfg.GROUPS.values() for t in grp):
@@ -207,8 +207,8 @@ def penalty_shootout(model, team_a, team_b):
     an independent success with probability PENALTY_CONVERSION.
 
     Note: we always simulate all 5 first-round kicks even after the result is
-    mathematically decided. This does not change who wins — if a team's lead
-    is already unassailable, taking the remaining kicks cannot overturn it —
+    mathematically decided. This does not change who wins - if a team's lead
+    is already unassailable, taking the remaining kicks cannot overturn it -
     and it keeps the code simple.
 
     Returns the winning team.
@@ -228,11 +228,11 @@ def simulate_knockout(model, team_a, team_b):
     """
     Play one knockout match to a finish. Returns (winner, loser).
 
-    Stage 1 — 90 minutes: draw a scoreline normally.
-    Stage 2 — extra time: only if level. Two 15-minute halves = 30 minutes,
+    Stage 1 - 90 minutes: draw a scoreline normally.
+    Stage 2 - extra time: only if level. Two 15-minute halves = 30 minutes,
               so goals are drawn from the model at one third of the 90-minute
               rate (rate_scale = 1/3) and added to the aggregate score.
-    Stage 3 — penalties: only if STILL level after extra time.
+    Stage 3 - penalties: only if STILL level after extra time.
 
     Knockout matches are treated as neutral-venue (host countries share the
     knockout venues).
@@ -240,7 +240,7 @@ def simulate_knockout(model, team_a, team_b):
     a, b = sample_score(model, team_a, team_b)               # neutral venue
 
     if a == b:
-        # Extra time — an independent 30-minute mini-match, still neutral.
+        # Extra time - an independent 30-minute mini-match, still neutral.
         ea, eb = sample_score(model, team_a, team_b,
                               rate_scale=1.0 / 3.0)
         a += ea
@@ -268,12 +268,14 @@ def simulate_tournament(model, groups, hosts):
         2 = reached round of 32     5 = semi-finalist
         3 = reached round of 16     6 = finalist
                                     7 = champion
-    Also returns the set of group winners (for the "win your group" stat).
+    Also returns the set of group winners, and {team: group finishing
+    position 1-4} for the group-stage standings distribution.
     """
     # ---- group stage ----------------------------------------------------
     slots = {}                       # "1A"/"2A" -> team
     third_place = {}                 # group letter -> (team, pts, gd, gf)
     stage = {}                       # team -> furthest stage reached
+    finish = {}                      # team -> group finishing position (1-4)
     group_winners = set()
 
     for letter, names in groups.items():
@@ -282,6 +284,8 @@ def simulate_tournament(model, groups, hosts):
         slots[f"2{letter}"] = ranked[1]
         group_winners.add(ranked[0])
 
+        for position, team in enumerate(ranked, start=1):
+            finish[team] = position              # 1st / 2nd / 3rd / 4th in group
         for team in names:
             stage[team] = 1                      # everyone: group stage
         for team in ranked[:2]:
@@ -350,7 +354,7 @@ def simulate_tournament(model, groups, hosts):
     champion, _ = simulate_knockout(model, resolve(sa, mid), resolve(sb, mid))
     stage[champion] = 7
 
-    return stage, group_winners
+    return stage, group_winners, finish
 
 
 # ===========================================================================
@@ -369,14 +373,17 @@ def run(model, n_simulations):
     # Counters: for each team, how many sims it reached at least each stage.
     reached = defaultdict(lambda: np.zeros(8, dtype=np.int64))  # index = stage
     group_wins = defaultdict(int)
+    finish_counts = defaultdict(lambda: np.zeros(4, dtype=np.int64))  # pos 1-4
 
     for s in range(n_simulations):
-        stage, winners = simulate_tournament(model, groups, hosts)
+        stage, winners, finish = simulate_tournament(model, groups, hosts)
         for team, st in stage.items():
             # A team that reached stage `st` also reached every lower stage.
             reached[team][:st + 1] += 1
         for team in winners:
             group_wins[team] += 1
+        for team, position in finish.items():
+            finish_counts[team][position - 1] += 1
 
         if (s + 1) % max(1, n_simulations // 10) == 0:
             print(f"  {s + 1:,} / {n_simulations:,} simulations done")
@@ -386,9 +393,14 @@ def run(model, n_simulations):
     rows = []
     for team in sorted(team_group):
         r = reached[team]
+        fc = finish_counts[team]
         rows.append({
             "team": team,
             "group": team_group[team],
+            "P(1st)": fc[0] / n_simulations,
+            "P(2nd)": fc[1] / n_simulations,
+            "P(3rd)": fc[2] / n_simulations,
+            "P(4th)": fc[3] / n_simulations,
             "P(win group)": group_wins[team] / n_simulations,
             "P(advance)": r[2] / n_simulations,        # out of the group
             "P(round of 16)": r[3] / n_simulations,
