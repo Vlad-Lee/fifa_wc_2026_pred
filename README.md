@@ -2,7 +2,7 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge.svg)](https://fifawc2026pred.streamlit.app/)
 
-![Dashboard Preview](assets/dashboard_preview.png)
+![Dashboard Preview](outputs/figures/dashboard_preview.png)
 
 A statistical forecast of the 2026 FIFA World Cup. A **Dixon-Coles** goal model
 is fitted to decades of international match results, and the 48-team tournament
@@ -40,14 +40,14 @@ fifa_wc_2026_pred/
 │           ├── modeling_matrices_package.zip   # generated (gitignored)
 │           ├── dixon_coles_params.json         # generated (COMMITTED)
 │           └── wc2026_predictions.csv          # generated (gitignored)
+├── output/
+│   └── figures/
+│       └── dashboard_preview.png           # generated plots & screenshots
 ├── src/
 │   ├── model_data_cleaning.py    # clean raw results, train/test split
-│   ├── elo.py                    # standalone Elo ratings (not used by the model)
 │   ├── dixon_coles.py            # the Dixon-Coles model: fit + predict
 │   ├── wc2026_config.py          # the 2026 draw, bracket, third-place solver
 │   └── simulate_wc2026.py        # Monte-Carlo tournament simulation
-├── notebooks/
-│   └── wc2026_dixon_coles.ipynb  # interactive walkthrough of the pipeline
 └── app/
     ├── Home.py                   # Streamlit entry point
     ├── lib.py                    # shared helpers for the app
@@ -85,13 +85,9 @@ Run the steps in order — each consumes the previous step's output.
 
 ```
 python src/model_data_cleaning.py      # -> modeling_matrices_package.zip
-python src/elo.py                      # optional; standalone Elo ratings
 python src/dixon_coles.py              # -> dixon_coles_params.json
 python src/simulate_wc2026.py 20000    # -> wc2026_predictions.csv
 ```
-
-`elo.py` is a separate Elo rating system kept in the repo for reference. The
-Dixon-Coles forecast does **not** use it — it is safe to skip.
 
 ## The Streamlit app
 
